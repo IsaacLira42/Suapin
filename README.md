@@ -8,7 +8,7 @@ O Suapin é um projeto desenvolvido para a disciplina de Desenvolvimento de Disp
 
 O design da interface e o fluxo do usuário foram projetados para priorizar a clareza e a rapidez na tomada de decisão.
 
-> ### 🔗 **[Acessar Protótipo Interativo no Figma](https://www.figma.com/design/LqyZWxuVsuQackQrFQGPBX/Suapin?node-id=0-1&p=f)**
+> ### 🔗 **[Acessar Protótipo no Figma](https://www.figma.com/design/LqyZWxuVsuQackQrFQGPBX/Suapin?node-id=0-1&p=f)**
 
 ## 🛠️ Stack Tecnológica
 
