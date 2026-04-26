@@ -1,6 +1,18 @@
 # 🐸 Suapin
 
-Um aplicativo mobile desenvolvido em Flutter que transforma dados brutos do SUAP em **decisão prática para o aluno**.
+O Suapin é um projeto desenvolvido para a disciplina de Desenvolvimento de Dispositivos Móveis. Trata-se de um aplicativo construído em Flutter que consome a API do SUAP (via um backend em Django) para atuar como uma camada de suporte à decisão. O foco do projeto é converter o volume de dados acadêmicos brutos em informações acionáveis, auxiliando o aluno no monitoramento de desempenho e na gestão de riscos de reprovação.
+
+---
+
+## 🎨 Interface e Design (Figma)
+
+O design da interface e o fluxo do usuário foram projetados para priorizar a clareza e a rapidez na tomada de decisão.
+
+> ### 🔗 **[Acessar Protótipo Interativo no Figma](https://www.figma.com/design/LqyZWxuVsuQackQrFQGPBX/Suapin?node-id=0-1&p=f)**
+
+## 🛠️ Stack Tecnológica
+
+<img src="https://skillicons.dev/icons?i=flutter,dart,docker,git,figma" height="52"/>
 
 ## 🎯 Problema
 
