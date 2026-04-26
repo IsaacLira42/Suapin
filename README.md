@@ -1,8 +1,8 @@
 # 🐸 Suapin
 
-O Suapin é um projeto desenvolvido para a disciplina de Desenvolvimento de Dispositivos Móveis. Trata-se de um aplicativo construído em Flutter que consome a API do SUAP (via um backend em Django) para atuar como uma camada de suporte à decisão. O foco do projeto é converter o volume de dados acadêmicos brutos em informações acionáveis, auxiliando o aluno no monitoramento de desempenho e na gestão de riscos de reprovação.
+![Telas do Suapin](Doc/Telas_Suapin_transparent.png)
 
----
+O Suapin é um projeto desenvolvido para a disciplina de Desenvolvimento de Dispositivos Móveis. Trata-se de um aplicativo construído em Flutter que consome a API do SUAP (via um backend em Django) para atuar como uma camada de suporte à decisão. O foco do projeto é converter o volume de dados acadêmicos brutos em informações acionáveis, auxiliando o aluno no monitoramento de desempenho e na gestão de riscos de reprovação.
 
 ## 🎨 Interface e Design (Figma)
 
@@ -111,3 +111,12 @@ Este projeto implementa uma lógica que transforma JSON bruto em insights acion�
 - **Backend de Abstração:** Django (REST Framework)
 - **Comunicação:** Dio (HTTP Client)
 - **Segurança:** JWT (JSON Web Token)
+
+## 👤 Autor
+
+**Isaac Lira**  
+Desenvolvedor Full Stack | TypeScript Enthusiast
+
+[![GitHub](https://skillicons.dev/icons?i=github)](https://github.com/IsaacLira42)
+[![LinkedIn](https://skillicons.dev/icons?i=linkedin)](https://linkedin.com/in/isaaclira42)
+[![Gmail](https://skillicons.dev/icons?i=gmail)](mailto:isaaclira422@gmail.com)
