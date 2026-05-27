@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import '../pages/inbox_page.dart';
 
 class BasePage extends StatelessWidget {
   final Widget child;
+  final int currentIndex;
 
-  const BasePage({super.key, required this.child});
+  const BasePage({super.key, required this.child, this.currentIndex = 0});
 
   @override
   Widget build(BuildContext context) {
@@ -16,10 +18,18 @@ class BasePage extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
+        currentIndex: currentIndex,
         selectedItemColor: const Color(0xFF065F46),
         unselectedItemColor: Colors.grey,
         showUnselectedLabels: true,
         type: BottomNavigationBarType.fixed,
+        onTap: (index) {
+          if (index == 3 && currentIndex != 3) {
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (context) => const InboxPage()));
+          }
+        },
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.dashboard),
