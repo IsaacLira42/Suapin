@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../pages/inbox_page.dart';
+import '../pages/disciplinas_page.dart';
 
 class BasePage extends StatelessWidget {
   final Widget child;
@@ -28,6 +29,11 @@ class BasePage extends StatelessWidget {
             Navigator.of(
               context,
             ).push(MaterialPageRoute(builder: (context) => const InboxPage()));
+          }
+          if (index == 1 && currentIndex != 1) {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => const DisciplinasPage()),
+            );
           }
         },
         items: const [
