@@ -57,8 +57,22 @@ class TituloDaPagina extends StatelessWidget {
           else if (showAvatar)
             CircleAvatar(
               radius: avatarRadius,
-              backgroundImage: const NetworkImage(
-                'https://github.com/isaaclira.png',
+              backgroundColor: Colors.grey.shade200,
+              child: ClipOval(
+                child: Image.network(
+                  'https://github.com/isaaclira.png',
+                  width: avatarRadius * 2,
+                  height: avatarRadius * 2,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    // Fallback para evitar NetworkImageLoadException
+                    return Icon(
+                      Icons.person,
+                      size: avatarRadius,
+                      color: Colors.grey,
+                    );
+                  },
+                ),
               ),
             ),
         ],
