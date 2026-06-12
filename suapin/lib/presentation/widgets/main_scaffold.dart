@@ -47,6 +47,7 @@ class _MainScaffoldState extends State<MainScaffold> {
       onWillPop: _onWillPop,
       child: Scaffold(
         backgroundColor: const Color(0xFFF7F9F9),
+        appBar: AppBar(title: const Text("Suapin")),
         drawer: _buildDrawer(context),
         body: IndexedStack(
           index: _currentIndex,
