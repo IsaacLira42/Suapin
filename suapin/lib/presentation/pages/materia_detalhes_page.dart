@@ -2,19 +2,36 @@ import 'package:flutter/material.dart';
 import 'disciplinas_page.dart';
 
 class MateriaDetalhesPage extends StatelessWidget {
-  final DisciplineData data;
+  final DisciplineData? data;
 
-  const MateriaDetalhesPage({super.key, required this.data});
+  const MateriaDetalhesPage({super.key, this.data});
 
   @override
   Widget build(BuildContext context) {
+    final DisciplineData? resolvedData =
+        data ?? ModalRoute.of(context)?.settings.arguments as DisciplineData?;
+    final DisciplineData displayData =
+        resolvedData ??
+        DisciplineData(
+          title: 'Disciplina',
+          teacher: 'Professor',
+          percentual: 0.0,
+          nota: '0.0',
+          faltas: '00',
+          tipo: 'N/A',
+          icon: Icons.book,
+        );
+
     return Scaffold(
       backgroundColor: const Color(0xFFF7F9F9),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.black87),
-        title: Text(data.title, style: const TextStyle(color: Colors.black87)),
+        title: Text(
+          displayData.title,
+          style: const TextStyle(color: Colors.black87),
+        ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -24,13 +41,27 @@ class MateriaDetalhesPage extends StatelessWidget {
             children: [
               _buildTabs(),
               const SizedBox(height: 16),
-              _mediaCard(),
+              _mediaCard(displayData),
               const SizedBox(height: 12),
               _presencaCard(),
               const SizedBox(height: 12),
               _evolucaoCard(),
               const SizedBox(height: 12),
               _analiseRiscoCard(),
+              const SizedBox(height: 12),
+              Align(
+                alignment: Alignment.center,
+                child: ElevatedButton(
+                  onPressed: () {
+                    // return a sample result to the caller
+                    debugPrint(
+                      'MateriaDetalhesPage: popping with result favorited',
+                    );
+                    Navigator.of(context).pop({'favorited': true});
+                  },
+                  child: const Text('Marcar como Favorita (retorna resultado)'),
+                ),
+              ),
             ],
           ),
         ),
@@ -60,7 +91,7 @@ class MateriaDetalhesPage extends StatelessWidget {
     );
   }
 
-  Widget _mediaCard() {
+  Widget _mediaCard(DisciplineData data) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(

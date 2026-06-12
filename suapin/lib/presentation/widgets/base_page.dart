@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import '../pages/inbox_page.dart';
-import '../pages/disciplinas_page.dart';
 
 class BasePage extends StatelessWidget {
   final Widget child;
@@ -17,37 +15,6 @@ class BasePage extends StatelessWidget {
           padding: const EdgeInsets.all(20.0),
           child: child,
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: currentIndex,
-        selectedItemColor: const Color(0xFF065F46),
-        unselectedItemColor: Colors.grey,
-        showUnselectedLabels: true,
-        type: BottomNavigationBarType.fixed,
-        onTap: (index) {
-          if (index == 3 && currentIndex != 3) {
-            Navigator.of(
-              context,
-            ).push(MaterialPageRoute(builder: (context) => const InboxPage()));
-          }
-          if (index == 1 && currentIndex != 1) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => const DisciplinasPage()),
-            );
-          }
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
-            label: 'Dashboard',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Disciplinas'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today),
-            label: 'Agenda',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.mail), label: 'Inbox'),
-        ],
       ),
     );
   }

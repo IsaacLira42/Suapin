@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../pages/disciplinas_page.dart';
-import '../pages/materia_detalhes_page.dart';
 
 class DisciplineCard extends StatelessWidget {
   final DisciplineData data;
@@ -115,12 +114,12 @@ class DisciplineCard extends StatelessWidget {
           Align(
             alignment: Alignment.centerLeft,
             child: TextButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => MateriaDetalhesPage(data: data),
-                  ),
-                );
+              onPressed: () async {
+                debugPrint('Navigator.pushNamed: /detalhes -> ${data.title}');
+                final result = await Navigator.of(
+                  context,
+                ).pushNamed('/detalhes', arguments: data);
+                debugPrint('Returned from /detalhes: $result');
               },
               child: Row(
                 mainAxisSize: MainAxisSize.min,
