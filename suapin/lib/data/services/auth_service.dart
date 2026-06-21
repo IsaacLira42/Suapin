@@ -27,6 +27,7 @@ class AuthService {
 
         if (accessToken != null) {
           await _storage.write(key: 'auth_token', value: accessToken);
+          await _storage.write(key: 'refresh_token', value: data['refresh']);
 
           return true;
         }
