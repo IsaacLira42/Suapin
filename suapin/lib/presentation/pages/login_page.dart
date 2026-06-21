@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:suapin/data/services/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -12,13 +13,14 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _matriculaController = TextEditingController();
   final _passwordController = TextEditingController();
+
+  final _authService = AuthService();
   bool _isPasswordVisible = false;
+  bool _isLoading = false;
 
   // Definição da paleta de cores institucional
   static const Color _primaryGreen = Color(0xFF006D42);
-  static const Color _lightGreenBg = Color(
-    0xFFE8F5E9,
-  ); // Tom claro para feedback/fundo
+  static const Color _lightGreenBg = Color(0xFFE8F5E9);
 
   @override
   void dispose() {
@@ -27,16 +29,42 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  void _submitForm() {
+  void _submitForm() async {
     if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
+
       final matricula = _matriculaController.text.trim();
-      // Lógica de autenticação integrada com a API aqui
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Autenticando matrícula: $matricula...'),
-          backgroundColor: _primaryGreen,
-        ),
-      );
+      final password = _passwordController.text;
+
+      // Realiza a chamada assíncrona para a API externa através do serviço
+      final success = await _authService.login(matricula, password);
+
+      // Verifica se o widget continua montado na árvore antes de atualizar o estado ou usar o context
+      if (!mounted) return;
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Login realizado com sucesso!'),
+            backgroundColor: _primaryGreen,
+          ),
+        );
+        // Avançar para a tela principal
+        Navigator.pushReplacementNamed(context, '/home');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Falha na autenticação. Verifique os dados.'),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
     }
   }
 
@@ -99,6 +127,8 @@ class _LoginPageState extends State<LoginPage> {
                     // Campo de Matrícula
                     TextFormField(
                       controller: _matriculaController,
+                      enabled:
+                          !_isLoading, // Bloqueia digitação enquanto carrega
                       keyboardType: TextInputType.number,
                       // Permite apenas números no teclado
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -125,6 +155,8 @@ class _LoginPageState extends State<LoginPage> {
                     // Campo de Senha
                     TextFormField(
                       controller: _passwordController,
+                      enabled:
+                          !_isLoading, // Bloqueia digitação enquanto carrega
                       obscureText: !_isPasswordVisible,
                       decoration: InputDecoration(
                         labelText: 'Senha',
@@ -140,11 +172,13 @@ class _LoginPageState extends State<LoginPage> {
                                 : Icons.visibility,
                             color: _primaryGreen,
                           ),
-                          onPressed: () {
-                            setState(() {
-                              _isPasswordVisible = !_isPasswordVisible;
-                            });
-                          },
+                          onPressed: _isLoading
+                              ? null
+                              : () {
+                                  setState(() {
+                                    _isPasswordVisible = !_isPasswordVisible;
+                                  });
+                                },
                         ),
                       ),
                       validator: (value) {
@@ -159,26 +193,40 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 24),
 
-                    // Botão de Entrar (Verde com texto Branco)
+                    // Botão de Entrar (Reativo ao estado de Loading)
                     SizedBox(
                       width: double.infinity,
                       height: 50,
                       child: FilledButton(
-                        onPressed: _submitForm,
+                        onPressed: _isLoading
+                            ? null
+                            : _submitForm, // Previne múltiplos cliques
                         style: FilledButton.styleFrom(
                           backgroundColor: _primaryGreen,
                           foregroundColor: Colors.white,
+                          disabledBackgroundColor: _primaryGreen.withOpacity(
+                            0.6,
+                          ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        child: const Text(
-                          'Entrar',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        child: _isLoading
+                            ? const SizedBox(
+                                height: 24,
+                                width: 24,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2.5,
+                                ),
+                              )
+                            : const Text(
+                                'Entrar',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                       ),
                     ),
                   ],
