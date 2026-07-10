@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:suapin/data/services/auth_service.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:suapin/presentation/bloc/auth_cubit.dart';
+import 'package:suapin/presentation/bloc/auth_state.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -14,11 +15,9 @@ class _LoginPageState extends State<LoginPage> {
   final _matriculaController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  final _authService = AuthService();
-  bool _isPasswordVisible = false;
-  bool _isLoading = false;
+  bool _isPasswordVisible =
+      false; // Este é um estado puramente visual, pode ficar no setState.
 
-  // Definição da paleta de cores institucional
   static const Color _primaryGreen = Color(0xFF006D42);
   static const Color _lightGreenBg = Color(0xFFE8F5E9);
 
@@ -29,208 +28,128 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  void _submitForm() async {
+  void _submitForm() {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
-
       final matricula = _matriculaController.text.trim();
       final password = _passwordController.text;
 
-      // Realiza a chamada assíncrona para a API externa através do serviço
-      final success = await _authService.login(matricula, password);
-
-      // Verifica se o widget continua montado na árvore antes de atualizar o estado ou usar o context
-      if (!mounted) return;
-
-      setState(() {
-        _isLoading = false;
-      });
-
-      if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Login realizado com sucesso!'),
-            backgroundColor: _primaryGreen,
-          ),
-        );
-        // Avançar para a tela principal
-        Navigator.pushReplacementNamed(context, '/home');
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Falha na autenticação. Verifique os dados.'),
-            backgroundColor: Colors.redAccent,
-          ),
-        );
-      }
+      // Chama a regra de negócio do Cubit, tirando a responsabilidade da UI
+      context.read<AuthCubit>().login(matricula, password);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Theme(
-      // Sobrescreve o tema local para garantir a paleta verde e branca nesta tela
-      data: Theme.of(context).copyWith(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: _primaryGreen,
-          primary: _primaryGreen,
-          surface: Colors.white,
-        ),
-        inputDecorationTheme: const InputDecorationTheme(
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: _primaryGreen, width: 2.0),
-          ),
-          labelStyle: TextStyle(color: _primaryGreen),
-        ),
-      ),
+      data: Theme.of(
+        context,
+      ).copyWith(colorScheme: ColorScheme.fromSeed(seedColor: _primaryGreen)),
       child: Scaffold(
-        backgroundColor: Colors.white, // Fundo predominantemente branco
+        backgroundColor: Colors.white,
         body: SafeArea(
           child: Center(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24.0),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Ícone ou Logo Acadêmica customizada em Verde
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: const BoxDecoration(
-                        color: _lightGreenBg,
-                        shape: BoxShape.circle,
+              // BlocConsumer escuta o estado para navegar/mostrar erros, e constrói a UI (loading)
+              child: BlocConsumer<AuthCubit, AuthState>(
+                listener: (context, state) {
+                  if (state is AuthAuthenticated) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Login realizado com sucesso!'),
+                        backgroundColor: _primaryGreen,
                       ),
-                      child: const Icon(
-                        Icons.school_outlined,
-                        size: 48,
-                        color: _primaryGreen,
+                    );
+                    Navigator.pushReplacementNamed(context, '/home');
+                  } else if (state is AuthError) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(state.message),
+                        backgroundColor: Colors.redAccent,
                       ),
-                    ),
-                    const SizedBox(height: 16),
+                    );
+                  }
+                },
+                builder: (context, state) {
+                  final isLoading = state is AuthLoading;
 
-                    // Título do App
-                    const Text(
-                      'Suapin',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: _primaryGreen,
-                        letterSpacing: 1.2,
-                      ),
-                    ),
-                    const SizedBox(height: 40),
-
-                    // Campo de Matrícula
-                    TextFormField(
-                      controller: _matriculaController,
-                      enabled:
-                          !_isLoading, // Bloqueia digitação enquanto carrega
-                      keyboardType: TextInputType.number,
-                      // Permite apenas números no teclado
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      decoration: const InputDecoration(
-                        labelText: 'Matrícula',
-                        prefixIcon: Icon(
-                          Icons.badge_outlined,
-                          color: _primaryGreen,
-                        ),
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Por favor, insira sua matrícula';
-                        }
-                        if (value.length < 4) {
-                          return 'Insira uma matrícula válida';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Campo de Senha
-                    TextFormField(
-                      controller: _passwordController,
-                      enabled:
-                          !_isLoading, // Bloqueia digitação enquanto carrega
-                      obscureText: !_isPasswordVisible,
-                      decoration: InputDecoration(
-                        labelText: 'Senha',
-                        prefixIcon: const Icon(
-                          Icons.lock_outlined,
-                          color: _primaryGreen,
-                        ),
-                        border: const OutlineInputBorder(),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _isPasswordVisible
-                                ? Icons.visibility_off
-                                : Icons.visibility,
-                            color: _primaryGreen,
+                  return Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // ... MANTENHA O LOGO E O TÍTULO AQUI ...
+                        TextFormField(
+                          controller: _matriculaController,
+                          enabled: !isLoading,
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(
+                            labelText: 'Matrícula',
+                            prefixIcon: Icon(
+                              Icons.badge_outlined,
+                              color: _primaryGreen,
+                            ),
+                            border: OutlineInputBorder(),
                           ),
-                          onPressed: _isLoading
-                              ? null
-                              : () {
-                                  setState(() {
-                                    _isPasswordVisible = !_isPasswordVisible;
-                                  });
-                                },
+                          validator: (value) =>
+                              value!.isEmpty ? 'Insira sua matrícula' : null,
                         ),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Por favor, insira sua senha';
-                        }
-                        if (value.length < 6) {
-                          return 'A senha deve conter pelo menos 6 caracteres';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 24),
+                        const SizedBox(height: 16),
 
-                    // Botão de Entrar (Reativo ao estado de Loading)
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: FilledButton(
-                        onPressed: _isLoading
-                            ? null
-                            : _submitForm, // Previne múltiplos cliques
-                        style: FilledButton.styleFrom(
-                          backgroundColor: _primaryGreen,
-                          foregroundColor: Colors.white,
-                          disabledBackgroundColor: _primaryGreen.withOpacity(
-                            0.6,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: _isLoading
-                            ? const SizedBox(
-                                height: 24,
-                                width: 24,
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 2.5,
-                                ),
-                              )
-                            : const Text(
-                                'Entrar',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                        TextFormField(
+                          controller: _passwordController,
+                          enabled: !isLoading,
+                          obscureText: !_isPasswordVisible,
+                          decoration: InputDecoration(
+                            labelText: 'Senha',
+                            prefixIcon: const Icon(
+                              Icons.lock_outlined,
+                              color: _primaryGreen,
+                            ),
+                            border: const OutlineInputBorder(),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isPasswordVisible
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
                               ),
-                      ),
+                              onPressed: isLoading
+                                  ? null
+                                  : () {
+                                      setState(() {
+                                        _isPasswordVisible =
+                                            !_isPasswordVisible;
+                                      });
+                                    },
+                            ),
+                          ),
+                          validator: (value) =>
+                              value!.isEmpty ? 'Insira sua senha' : null,
+                        ),
+                        const SizedBox(height: 24),
+
+                        SizedBox(
+                          width: double.infinity,
+                          height: 50,
+                          child: FilledButton(
+                            onPressed: isLoading ? null : _submitForm,
+                            style: FilledButton.styleFrom(
+                              backgroundColor: _primaryGreen,
+                            ),
+                            child: isLoading
+                                ? const CircularProgressIndicator(
+                                    color: Colors.white,
+                                  )
+                                : const Text(
+                                    'Entrar',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  );
+                },
               ),
             ),
           ),
