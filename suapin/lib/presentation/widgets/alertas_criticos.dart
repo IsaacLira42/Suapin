@@ -1,26 +1,19 @@
 import 'package:flutter/material.dart';
 
 class AlertasCriticos extends StatelessWidget {
-  final List<Map<String, String>> alertas = [
-    {
-      "nome": "Exame Final Próximo",
-      "dado": "3 Dias",
-      "materia": "Cálculo Diferencial e Integral III",
-    },
-    {
-      "nome": "Limite de Faltas",
-      "dado": "22%",
-      "materia": "Estruturas de Dados Avançadas",
-    },
-  ];
+  // Agora a lista vem de fora (da HomePage)
+  final List<Map<String, String>> alertas;
 
-  AlertasCriticos({super.key});
+  const AlertasCriticos({super.key, required this.alertas});
 
   @override
   Widget build(BuildContext context) {
+    // Se não tiver alertas, podemos não mostrar o componente ou mostrar um estado vazio
+    if (alertas.isEmpty) {
+      return const SizedBox.shrink(); // Esconde o componente
+    }
+
     return Container(
-      // Removendo largura fixa para deixar o layout decidir,
-      // ou use width: double.infinity se quiser forçar o container cinza também.
       width: double.infinity,
       padding: const EdgeInsets.all(20.0),
       decoration: BoxDecoration(
@@ -28,7 +21,6 @@ class AlertasCriticos extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
       ),
       child: Column(
-        // Isso garante que os filhos da Column tentem ocupar toda a largura
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
@@ -50,9 +42,9 @@ class AlertasCriticos extends StatelessWidget {
                   color: const Color(0xFFFEE2E2),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Text(
-                  "2 PRIORIDADES",
-                  style: TextStyle(
+                child: Text(
+                  "${alertas.length} PRIORIDADE${alertas.length > 1 ? 'S' : ''}",
+                  style: const TextStyle(
                     color: Color(0xFFB91C1C),
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
@@ -62,7 +54,6 @@ class AlertasCriticos extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          // Mapeia a lista para os cards
           ...alertas.map((alerta) => _buildAlertaCard(alerta)).toList(),
         ],
       ),
@@ -70,8 +61,9 @@ class AlertasCriticos extends StatelessWidget {
   }
 
   Widget _buildAlertaCard(Map<String, String> alerta) {
+    // Mesma implementação original, só ajustei o build
     return Container(
-      width: double.infinity, // <--- GARANTE A LARGURA 100%
+      width: double.infinity,
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -79,7 +71,6 @@ class AlertasCriticos extends StatelessWidget {
         border: const Border(
           left: BorderSide(color: Color(0xFFB91C1C), width: 4),
         ),
-        // Adicionando uma sombra leve para combinar com o Figma
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.03),
@@ -95,7 +86,7 @@ class AlertasCriticos extends StatelessWidget {
           Text(
             alerta["nome"]!,
             style: const TextStyle(
-              color: Color(0xFF6B7280), // Cinza mais próximo do Figma
+              color: Color(0xFF6B7280),
               fontWeight: FontWeight.w500,
               fontSize: 13,
             ),
