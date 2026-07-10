@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:suapin/data/services/auth_service.dart';
 import 'package:suapin/presentation/bloc/auth_cubit.dart';
+import 'package:suapin/domain/entities/discipline_data.dart';
 import 'package:suapin/presentation/widgets/auth_gate.dart';
 import 'package:suapin/presentation/widgets/main_scaffold.dart';
 import 'package:suapin/presentation/pages/login_page.dart';
@@ -9,7 +10,6 @@ import 'package:suapin/presentation/pages/settings_page.dart';
 import 'package:suapin/presentation/pages/about_page.dart';
 import 'package:suapin/presentation/pages/materia_detalhes_page.dart';
 import 'package:suapin/presentation/pages/disciplinas_page.dart';
-import 'package:suapin/presentation/pages/disciplinas_page.dart' as dp;
 
 void main() {
   runApp(const MyApp());
@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
           '/disciplinas': (context) => const DisciplinasPage(),
           '/detalhes': (context) {
             final args = ModalRoute.of(context)!.settings.arguments;
-            if (args is dp.DisciplineData) {
+            if (args is DisciplineData) {
               return MateriaDetalhesPage(data: args);
             }
             return const MateriaDetalhesPage();

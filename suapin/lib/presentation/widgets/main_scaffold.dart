@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:suapin/presentation/bloc/auth_cubit.dart';
+import '../../domain/entities/discipline_data.dart';
+import '../pages/disciplinas_page.dart';
 import '../pages/home_page.dart';
 import '../pages/inbox_page.dart';
-import '../pages/disciplinas_page.dart';
 import '../pages/materia_detalhes_page.dart';
 
 class MainScaffold extends StatefulWidget {

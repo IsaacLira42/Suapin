@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../pages/disciplinas_page.dart';
+import '../../domain/entities/discipline_data.dart';
 
 class DisciplineCard extends StatelessWidget {
   final DisciplineData data;
