@@ -56,6 +56,7 @@ class SuapApiService {
       // Exigência: Se o servidor retornar 401, exclui o token e derruba o usuário
       if (responses.any((r) => r.statusCode == 401)) {
         await _storage.delete(key: 'auth_token');
+        await _storage.delete(key: 'refresh_token');
         throw UnauthorizedException();
       }
 

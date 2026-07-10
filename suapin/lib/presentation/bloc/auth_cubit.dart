@@ -1,11 +1,26 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'dart:async';
 import '../../data/services/auth_service.dart';
 import 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   final AuthService _authService;
 
-  AuthCubit(this._authService) : super(AuthInitial());
+  AuthCubit(this._authService) : super(AuthInitial()) {
+    unawaited(_bootstrapAuth());
+  }
+
+  Future<void> _bootstrapAuth() async {
+    emit(AuthLoading());
+
+    final restored = await _authService.restoreSession();
+
+    if (restored) {
+      emit(AuthAuthenticated());
+    } else {
+      emit(AuthInitial());
+    }
+  }
 
   Future<void> login(String matricula, String password) async {
     emit(AuthLoading()); // Muda o estado para carregando

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:suapin/presentation/bloc/auth_cubit.dart';
-import 'package:suapin/presentation/bloc/auth_state.dart';
 import '../pages/home_page.dart';
 import '../pages/inbox_page.dart';
 import '../pages/disciplinas_page.dart';
@@ -46,46 +45,34 @@ class _MainScaffoldState extends State<MainScaffold> {
 
   @override
   Widget build(BuildContext context) {
-    // Adicionamos o BlocListener aqui!
-    return BlocListener<AuthCubit, AuthState>(
-      listener: (context, state) {
-        // Se o estado voltar a ser AuthInitial (logout), manda pro login
-        if (state is AuthInitial) {
-          Navigator.of(context).pushReplacementNamed('/login');
-        }
-      },
-      child: WillPopScope(
-        onWillPop: _onWillPop,
-        child: Scaffold(
-          backgroundColor: const Color(0xFFF7F9F9),
-          appBar: AppBar(title: const Text("Suapin")),
-          drawer: _buildDrawer(context),
-          body: IndexedStack(
-            index: _currentIndex,
-            children: [
-              _buildTabNavigator(0, (context) => const HomePage()),
-              _buildTabNavigator(1, (context) => const DisciplinasPage()),
-              _buildTabNavigator(2, (context) => const InboxPage()),
-            ],
-          ),
-          bottomNavigationBar: BottomNavigationBar(
-            currentIndex: _currentIndex,
-            onTap: _selectTab,
-            selectedItemColor: const Color(0xFF065F46),
-            unselectedItemColor: Colors.grey,
-            type: BottomNavigationBarType.fixed,
-            items: const [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.dashboard),
-                label: 'Home',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.book),
-                label: 'Disciplinas',
-              ),
-              BottomNavigationBarItem(icon: Icon(Icons.mail), label: 'Inbox'),
-            ],
-          ),
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF7F9F9),
+        appBar: AppBar(title: const Text("Suapin")),
+        drawer: _buildDrawer(context),
+        body: IndexedStack(
+          index: _currentIndex,
+          children: [
+            _buildTabNavigator(0, (context) => const HomePage()),
+            _buildTabNavigator(1, (context) => const DisciplinasPage()),
+            _buildTabNavigator(2, (context) => const InboxPage()),
+          ],
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: _selectTab,
+          selectedItemColor: const Color(0xFF065F46),
+          unselectedItemColor: Colors.grey,
+          type: BottomNavigationBarType.fixed,
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Home'),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.book),
+              label: 'Disciplinas',
+            ),
+            BottomNavigationBarItem(icon: Icon(Icons.mail), label: 'Inbox'),
+          ],
         ),
       ),
     );

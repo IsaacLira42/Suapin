@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:suapin/data/services/auth_service.dart';
 import 'package:suapin/presentation/bloc/auth_cubit.dart';
-import 'package:suapin/presentation/pages/login_page.dart';
+import 'package:suapin/presentation/widgets/auth_gate.dart';
 import 'package:suapin/presentation/widgets/main_scaffold.dart';
+import 'package:suapin/presentation/pages/login_page.dart';
 import 'package:suapin/presentation/pages/settings_page.dart';
 import 'package:suapin/presentation/pages/about_page.dart';
 import 'package:suapin/presentation/pages/materia_detalhes_page.dart';
@@ -31,7 +32,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Suapin',
         theme: ThemeData(scaffoldBackgroundColor: Colors.white),
-        initialRoute: '/login',
+        home: const AuthGate(),
         routes: {
           '/login': (context) => const LoginPage(),
           '/home': (context) => const MainScaffold(),

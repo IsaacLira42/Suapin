@@ -60,7 +60,6 @@ class _LoginPageState extends State<LoginPage> {
                         backgroundColor: _primaryGreen,
                       ),
                     );
-                    Navigator.pushReplacementNamed(context, '/home');
                   } else if (state is AuthError) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
