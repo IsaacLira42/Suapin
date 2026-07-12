@@ -8,6 +8,7 @@ import 'package:suapin/presentation/widgets/main_scaffold.dart';
 import 'package:suapin/presentation/pages/login_page.dart';
 import 'package:suapin/presentation/pages/settings_page.dart';
 import 'package:suapin/presentation/pages/about_page.dart';
+import 'package:suapin/presentation/pages/anotacoes_page.dart';
 import 'package:suapin/presentation/pages/materia_detalhes_page.dart';
 import 'package:suapin/presentation/pages/disciplinas_page.dart';
 
@@ -38,6 +39,7 @@ class MyApp extends StatelessWidget {
           '/home': (context) => const MainScaffold(),
           '/settings': (context) => const SettingsPage(),
           '/sobre': (context) => const AboutPage(),
+          '/anotacoes': (context) => const AnotacoesPage(),
           '/disciplinas': (context) => const DisciplinasPage(),
           '/detalhes': (context) {
             final args = ModalRoute.of(context)!.settings.arguments;

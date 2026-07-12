@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:suapin/presentation/bloc/auth_cubit.dart';
+import 'package:suapin/presentation/pages/anotacoes_page.dart';
 import '../../domain/entities/discipline_data.dart';
 import '../pages/disciplinas_page.dart';
 import '../pages/home_page.dart';
@@ -18,6 +19,7 @@ class _MainScaffoldState extends State<MainScaffold> {
   int _currentIndex = 0;
 
   final List<GlobalKey<NavigatorState>> _navigatorKeys = [
+    GlobalKey<NavigatorState>(),
     GlobalKey<NavigatorState>(),
     GlobalKey<NavigatorState>(),
     GlobalKey<NavigatorState>(),
@@ -58,6 +60,7 @@ class _MainScaffoldState extends State<MainScaffold> {
             _buildTabNavigator(0, (context) => const HomePage()),
             _buildTabNavigator(1, (context) => const DisciplinasPage()),
             _buildTabNavigator(2, (context) => const InboxPage()),
+            _buildTabNavigator(3, (context) => const AnotacoesPage()),
           ],
         ),
         bottomNavigationBar: BottomNavigationBar(
@@ -73,6 +76,10 @@ class _MainScaffoldState extends State<MainScaffold> {
               label: 'Disciplinas',
             ),
             BottomNavigationBarItem(icon: Icon(Icons.mail), label: 'Inbox'),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.edit_note),
+              label: 'Anotações',
+            ),
           ],
         ),
       ),
