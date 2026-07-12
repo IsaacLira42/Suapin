@@ -203,16 +203,6 @@ class AnotacoesPage extends StatelessWidget {
     BuildContext context, {
     AnotacaoModel? anotacao,
   }) async {
-    final formKey = GlobalKey<FormState>();
-    final tituloController = TextEditingController(
-      text: anotacao?.titulo ?? '',
-    );
-    final disciplinaController = TextEditingController(
-      text: anotacao?.disciplina ?? '',
-    );
-    final conteudoController = TextEditingController(
-      text: anotacao?.conteudo ?? '',
-    );
     final cubit = context.read<AnotacoesCubit>();
 
     await showModalBottomSheet<void>(
@@ -220,137 +210,9 @@ class AnotacoesPage extends StatelessWidget {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (sheetContext) {
-        var isSaving = false;
-
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return Container(
-              padding: EdgeInsets.only(
-                left: 20,
-                right: 20,
-                top: 20,
-                bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-              ),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-              ),
-              child: SingleChildScrollView(
-                child: Form(
-                  key: formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        anotacao == null ? 'Nova anotação' : 'Editar anotação',
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        controller: tituloController,
-                        decoration: const InputDecoration(
-                          labelText: 'Título',
-                          border: OutlineInputBorder(),
-                        ),
-                        validator: (value) =>
-                            value == null || value.trim().isEmpty
-                            ? 'Informe um título'
-                            : null,
-                      ),
-                      const SizedBox(height: 12),
-                      TextFormField(
-                        controller: disciplinaController,
-                        decoration: const InputDecoration(
-                          labelText: 'Matéria',
-                          border: OutlineInputBorder(),
-                        ),
-                        validator: (value) =>
-                            value == null || value.trim().isEmpty
-                            ? 'Informe a matéria'
-                            : null,
-                      ),
-                      const SizedBox(height: 12),
-                      TextFormField(
-                        controller: conteudoController,
-                        maxLines: 6,
-                        decoration: const InputDecoration(
-                          labelText: 'Conteúdo',
-                          border: OutlineInputBorder(),
-                          alignLabelWithHint: true,
-                        ),
-                        validator: (value) =>
-                            value == null || value.trim().isEmpty
-                            ? 'Informe o conteúdo'
-                            : null,
-                      ),
-                      const SizedBox(height: 20),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 50,
-                        child: FilledButton(
-                          style: FilledButton.styleFrom(
-                            backgroundColor: const Color(0xFF065F46),
-                          ),
-                          onPressed: isSaving
-                              ? null
-                              : () async {
-                                  if (!formKey.currentState!.validate()) {
-                                    return;
-                                  }
-
-                                  setState(() => isSaving = true);
-
-                                  final model = AnotacaoModel(
-                                    id: anotacao?.id,
-                                    titulo: tituloController.text.trim(),
-                                    disciplina: disciplinaController.text
-                                        .trim(),
-                                    conteudo: conteudoController.text.trim(),
-                                  );
-
-                                  final success = anotacao == null
-                                      ? await cubit.adicionarAnotacao(model)
-                                      : await cubit.editarAnotacao(model);
-
-                                  if (!sheetContext.mounted) {
-                                    return;
-                                  }
-
-                                  if (success) {
-                                    Navigator.of(sheetContext).pop();
-                                  } else {
-                                    setState(() => isSaving = false);
-                                  }
-                                },
-                          child: isSaving
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: Colors.white,
-                                  ),
-                                )
-                              : Text(anotacao == null ? 'Salvar' : 'Atualizar'),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-        );
+        return _AnotacaoFormSheet(anotacao: anotacao, cubit: cubit);
       },
     );
-
-    tituloController.dispose();
-    disciplinaController.dispose();
-    conteudoController.dispose();
   }
 
   Future<bool?> _confirmDelete(BuildContext context) {
@@ -373,5 +235,175 @@ class AnotacoesPage extends StatelessWidget {
         );
       },
     );
+  }
+}
+
+class _AnotacaoFormSheet extends StatefulWidget {
+  final AnotacaoModel? anotacao;
+  final AnotacoesCubit cubit;
+
+  const _AnotacaoFormSheet({this.anotacao, required this.cubit});
+
+  @override
+  State<_AnotacaoFormSheet> createState() => _AnotacaoFormSheetState();
+}
+
+class _AnotacaoFormSheetState extends State<_AnotacaoFormSheet> {
+  late final GlobalKey<FormState> _formKey;
+  late final TextEditingController _tituloController;
+  late final TextEditingController _disciplinaController;
+  late final TextEditingController _conteudoController;
+  bool _isSaving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _formKey = GlobalKey<FormState>();
+    _tituloController = TextEditingController(
+      text: widget.anotacao?.titulo ?? '',
+    );
+    _disciplinaController = TextEditingController(
+      text: widget.anotacao?.disciplina ?? '',
+    );
+    _conteudoController = TextEditingController(
+      text: widget.anotacao?.conteudo ?? '',
+    );
+  }
+
+  @override
+  void dispose() {
+    _tituloController.dispose();
+    _disciplinaController.dispose();
+    _conteudoController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      top: false,
+      child: Container(
+        width: double.infinity,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Padding(
+          padding: EdgeInsets.only(
+            left: 20,
+            right: 20,
+            top: 20,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+          ),
+          child: SingleChildScrollView(
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    widget.anotacao == null
+                        ? 'Nova anotação'
+                        : 'Editar anotação',
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _tituloController,
+                    decoration: const InputDecoration(
+                      labelText: 'Título',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) => value == null || value.trim().isEmpty
+                        ? 'Informe um título'
+                        : null,
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _disciplinaController,
+                    decoration: const InputDecoration(
+                      labelText: 'Matéria',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) => value == null || value.trim().isEmpty
+                        ? 'Informe a matéria'
+                        : null,
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _conteudoController,
+                    maxLines: 6,
+                    decoration: const InputDecoration(
+                      labelText: 'Conteúdo',
+                      border: OutlineInputBorder(),
+                      alignLabelWithHint: true,
+                    ),
+                    validator: (value) => value == null || value.trim().isEmpty
+                        ? 'Informe o conteúdo'
+                        : null,
+                  ),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: FilledButton(
+                      style: FilledButton.styleFrom(
+                        backgroundColor: const Color(0xFF065F46),
+                      ),
+                      onPressed: _isSaving ? null : _save,
+                      child: _isSaving
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : Text(
+                              widget.anotacao == null ? 'Salvar' : 'Atualizar',
+                            ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _save() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    setState(() => _isSaving = true);
+
+    final model = AnotacaoModel(
+      id: widget.anotacao?.id,
+      titulo: _tituloController.text.trim(),
+      disciplina: _disciplinaController.text.trim(),
+      conteudo: _conteudoController.text.trim(),
+    );
+
+    final success = widget.anotacao == null
+        ? await widget.cubit.adicionarAnotacao(model)
+        : await widget.cubit.editarAnotacao(model);
+
+    if (!mounted) {
+      return;
+    }
+
+    if (success) {
+      Navigator.of(context).pop();
+    } else {
+      setState(() => _isSaving = false);
+    }
   }
 }
